@@ -1,6 +1,6 @@
 # MultiDatePicker
 
-A customizable date picker wich support single date picker and range date picker.
+A customizable date picker which support single date picker and range date picker.
 
 # Example
 

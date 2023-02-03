@@ -20,7 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.playmoweb.multidatepicker.models.MultiDatePickerColors
 import com.playmoweb.multidatepicker.utils.*
 import com.playmoweb.multidatepicker.utils.extensions.toMonthYear
 import com.playmoweb.multidatepicker.utils.extensions.toShortDay
@@ -28,6 +30,10 @@ import java.util.*
 
 @Composable
 fun MultiDatePicker(
+    startDate: MutableState<Date?> = remember { mutableStateOf(null) },
+    endDate: MutableState<Date?> = remember { mutableStateOf(null) },
+    colors: MultiDatePickerColors = MultiDatePickerColors.defaults(),
+    cardRadius: Dp = mediumRadius,
     onStartDate: (Date?) -> Unit = { _ -> },
     onEndDate: (Date?) -> Unit = { _ -> },
 ) {
@@ -36,10 +42,8 @@ fun MultiDatePicker(
 
     val calendar = remember { mutableStateOf(Calendar.getInstance()) }
     val currDate = remember { mutableStateOf(calendar.value.time) }
-    val startDate: MutableState<Date?> = remember { mutableStateOf(null) }
-    val endDate: MutableState<Date?> = remember { mutableStateOf(null) }
 
-    val days = listOf(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY, Calendar.SUNDAY)
+    val weekDays = listOf(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY, Calendar.SUNDAY)
 
     LaunchedEffect(startDate.value) { onStartDate(startDate.value) }
     LaunchedEffect(endDate.value) { onEndDate(endDate.value) }
@@ -55,9 +59,9 @@ fun MultiDatePicker(
                 Operation.PLUS -> "next"
                 Operation.MINUS -> "previous"
             },
-            tint = MaterialTheme.colorScheme.secondary,
+            tint = colors.iconColor,
             modifier = Modifier
-                .clip(RoundedCornerShape((smallRadius)))
+                .clip(CircleShape)
                 .clickable {
                     currDate.value = calendar.value.apply {
                         add(
@@ -75,7 +79,7 @@ fun MultiDatePicker(
     Column(
         Modifier
             .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.surface, RoundedCornerShape(mediumRadius))
+            .background(color = colors.cardColor, RoundedCornerShape(cardRadius))
             .padding(innerPadding)
     ) {
         /**
@@ -87,9 +91,7 @@ fun MultiDatePicker(
         ) {
             Text(
                 text = currDate.value.toMonthYear(),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.secondary
-                )
+                style = MaterialTheme.typography.bodyMedium.copy(color = colors.monthColor)
             )
 
             Row {
@@ -104,10 +106,10 @@ fun MultiDatePicker(
          * DAYS
          */
         Row {
-            days.map {
+            weekDays.map {
                 Text(
                     text = Calendar.getInstance().apply { set(Calendar.DAY_OF_WEEK, it) }.time.toShortDay(),
-                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.inverseOnSurface),
+                    style = MaterialTheme.typography.bodyMedium.copy(color = colors.weekDayColor),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f / 7f)
                 )
@@ -124,14 +126,14 @@ fun MultiDatePicker(
             val daysNumber: IntRange = (1..calendar.value.getActualMaximum(Calendar.DAY_OF_MONTH))
             val days: List<Date> = daysNumber.map { calendar.value.apply { set(Calendar.DAY_OF_MONTH, it) }.time }
             val daysItem: MutableList<Date?> = days.toMutableList()
-            // ADD EMPTY ITEMS TO THE BEGINING OF THE LIST
+            // ADD EMPTY ITEMS TO THE BEGINNING OF THE LIST IF FIRST WEEK DAY OF MONTH DON'T START ON THE FIRST DAY OF THE WEEK
             daysItem.first().let {
                 val dayOfWeek = if (it!!.day == 0) 7 else it.day
                 (1 until dayOfWeek).forEach { _ -> daysItem.add(0, null) }
             }
 
             val daysByWeek: List<MutableList<Date?>> = daysItem.chunked(7) { it.toMutableList() }
-            // ADD EMPTY ITEMS TO THE END OF THE LIST
+            // ADD EMPTY ITEMS TO THE END OF THE LIST IF LAST WEEK DAY OF MONTH DON'T START ON THE FIRST DAY OF THE WEEK
             daysByWeek.last().let { (1..7 - it.size).forEach { _ -> daysByWeek.last().add(null) } }
 
             daysByWeek.map {
@@ -143,8 +145,8 @@ fun MultiDatePicker(
                                 && endDate.value != null
                                 && (day.after(startDate.value) && day.before(endDate.value))
 
-                        val selectedBackgroundColor = animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
-                        val textColor = animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.secondary)
+                        val selectedBackgroundColor = animateColorAsState(targetValue = if (isSelected) colors.selectedIndicatorColor else Color.Transparent)
+                        val textColor = animateColorAsState(targetValue = if (isSelected) colors.selectedDayNumberColor else colors.dayNumberColor)
 
                         Box(
                             Modifier
@@ -152,7 +154,7 @@ fun MultiDatePicker(
                                 .onGloballyPositioned { coordinates -> itemHeight.value = with(localDensity) { coordinates.size.width.toDp() } }
                                 .height(itemHeight.value)
                                 .background(
-                                    if (isBetween || isSelected && endDate.value != null) MaterialTheme.colorScheme.outline else Color.Transparent,
+                                    if (isBetween || isSelected && endDate.value != null) colors.selectedDayBackgroundColor else Color.Transparent,
                                     if (isSelected) RoundedCornerShape(
                                         topStartPercent = if (day == startDate.value) 100 else 0,
                                         topEndPercent = if (day == endDate.value) 100 else 0,
