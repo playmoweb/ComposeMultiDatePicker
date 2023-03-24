@@ -30,6 +30,9 @@ import java.util.*
 
 @Composable
 fun MultiDatePicker(
+    modifier: Modifier = Modifier,
+    minDate: Date? = null,
+    maxDate: Date? = null,
     startDate: MutableState<Date?> = remember { mutableStateOf(null) },
     endDate: MutableState<Date?> = remember { mutableStateOf(null) },
     colors: MultiDatePickerColors = MultiDatePickerColors.defaults(),
@@ -77,7 +80,7 @@ fun MultiDatePicker(
     }
 
     Column(
-        Modifier
+        modifier
             .fillMaxWidth()
             .background(color = colors.cardColor, RoundedCornerShape(cardRadius))
             .padding(innerPadding)
@@ -144,9 +147,19 @@ fun MultiDatePicker(
                                 && startDate.value != null
                                 && endDate.value != null
                                 && (day.after(startDate.value) && day.before(endDate.value))
+                        val isEnabled = day != null
+                                && (minDate == null || day.after(minDate) || day == minDate)
+                                && (maxDate == null || day.before(maxDate) || day == maxDate)
+                                && (if (startDate.value != null && endDate.value == null) day.after(startDate.value) else true)
 
                         val selectedBackgroundColor = animateColorAsState(targetValue = if (isSelected) colors.selectedIndicatorColor else Color.Transparent)
-                        val textColor = animateColorAsState(targetValue = if (isSelected) colors.selectedDayNumberColor else colors.dayNumberColor)
+                        val textColor = animateColorAsState(targetValue = if (isSelected) {
+                            colors.selectedDayNumberColor
+                        } else if(!isEnabled) {
+                            colors.disableDayColor
+                        } else {
+                            colors.dayNumberColor
+                        })
 
                         Box(
                             Modifier
@@ -163,7 +176,7 @@ fun MultiDatePicker(
                                     ) else RoundedCornerShape(0)
                                 )
                                 .clip(CircleShape)
-                                .clickable(enabled = day != null && (if (startDate.value != null && endDate.value == null) day.after(startDate.value) else true)) {
+                                .clickable(enabled = isEnabled) {
                                     if (startDate.value == null) {
                                         startDate.value = day
                                     } else if (endDate.value == null) {
