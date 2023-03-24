@@ -12,6 +12,7 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -175,7 +176,7 @@ fun MultiDatePicker(
                                         } else if (endDate.value == null) {
                                             if (day.before(startDate.value)) startDate.value = day
                                             else if (day.after(startDate.value)) endDate.value = day
-                                            // else => day == startDate.value => do nothing
+                                            else if (day == startDate.value) startDate.value = null
                                         } else {
                                             startDate.value = day
                                             endDate.value = null
@@ -189,8 +190,14 @@ fun MultiDatePicker(
                                     .background(selectedBackgroundColor.value, CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
+                                var dayNumber: Int? = null
+                                if(day != null) {
+                                    val calendarDay = Calendar.getInstance().apply { time = day }
+                                    dayNumber = calendarDay.get(Calendar.DAY_OF_MONTH)
+                                }
+
                                 Text(
-                                    text = day?.date?.toString() ?: "",
+                                    text = dayNumber?.toString() ?: "",
                                     style = MaterialTheme.typography.bodyMedium.copy(color = textColor.value),
                                     textAlign = TextAlign.Center,
                                 )
