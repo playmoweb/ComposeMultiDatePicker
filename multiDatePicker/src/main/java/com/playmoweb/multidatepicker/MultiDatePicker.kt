@@ -37,8 +37,6 @@ fun MultiDatePicker(
     endDate: MutableState<Date?> = remember { mutableStateOf(null) },
     colors: MultiDatePickerColors = MultiDatePickerColors.defaults(),
     cardRadius: Dp = mediumRadius,
-    onStartDate: (Date?) -> Unit = { _ -> },
-    onEndDate: (Date?) -> Unit = { _ -> },
 ) {
     val localDensity = LocalDensity.current
     val itemHeight = remember { mutableStateOf(0.dp) }
@@ -47,9 +45,6 @@ fun MultiDatePicker(
     val currDate = remember { mutableStateOf(calendar.value.time) }
 
     val weekDays = listOf(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY, Calendar.SUNDAY)
-
-    LaunchedEffect(startDate.value) { onStartDate(startDate.value) }
-    LaunchedEffect(endDate.value) { onEndDate(endDate.value) }
 
     @Composable
     fun MonthPickerIcon(operation: Operation) {

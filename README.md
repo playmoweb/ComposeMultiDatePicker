@@ -22,5 +22,3 @@ Clicking a third time will reset the startDate and endDate values, and assign th
 |   endDate   |  MutableState<Date?>  |       mutableStateOf(null)       | Second date selected in picker (represent the end date of the range)  |
 |   colors    | MultiDatePickerColors | MultiDatePickerColors.defaults() |                Theme of colors used by the datePicker                 |
 | cardRadius  |          Dp           |               5.dp               |                         Radius of the picker                          |
-| onStartDate |    (Date?) -> Unit    |  (date: Date?) =>   print(date)  | Triggered when startDate value changed (by picking it in the picker)  |
-|  onEndDate  |    (Date?) -> Unit    |  (date: Date?) =>   print(date)  |  Triggered when endDate value changed (by picking it in the picker)   |
