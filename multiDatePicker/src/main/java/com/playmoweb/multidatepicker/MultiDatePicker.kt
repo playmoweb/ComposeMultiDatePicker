@@ -38,9 +38,6 @@ fun MultiDatePicker(
     colors: MultiDatePickerColors = MultiDatePickerColors.defaults(),
     cardRadius: Dp = mediumRadius,
 ) {
-    val localDensity = LocalDensity.current
-    val itemHeight = remember { mutableStateOf(0.dp) }
-
     val calendar = remember { mutableStateOf(Calendar.getInstance()) }
     val currDate = remember { mutableStateOf(calendar.value.time) }
 
@@ -145,7 +142,6 @@ fun MultiDatePicker(
                         val isEnabled = day != null
                                 && (minDate == null || day.after(minDate) || day == minDate)
                                 && (maxDate == null || day.before(maxDate) || day == maxDate)
-                        //&& (if (startDate.value != null && endDate.value == null) day.after(startDate.value) else true)
 
                         val selectedBackgroundColor = animateColorAsState(targetValue = if (isSelected) colors.selectedIndicatorColor else Color.Transparent)
                         val textColor = animateColorAsState(
@@ -161,8 +157,7 @@ fun MultiDatePicker(
                         Box(
                             Modifier
                                 .weight(1f / 7f)
-                                .onGloballyPositioned { coordinates -> itemHeight.value = with(localDensity) { coordinates.size.width.toDp() } }
-                                .height(itemHeight.value)
+                                .aspectRatio(1f)
                                 .background(
                                     if (isBetween || isSelected && endDate.value != null) colors.selectedDayBackgroundColor else Color.Transparent,
                                     if (isSelected) RoundedCornerShape(
@@ -189,7 +184,7 @@ fun MultiDatePicker(
                         ) {
                             Box(
                                 Modifier
-                                    .size(itemHeight.value)
+                                    .fillMaxSize()
                                     .background(selectedBackgroundColor.value, CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
