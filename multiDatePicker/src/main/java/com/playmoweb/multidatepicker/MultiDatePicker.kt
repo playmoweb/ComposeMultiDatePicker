@@ -150,16 +150,18 @@ fun MultiDatePicker(
                         val isEnabled = day != null
                                 && (minDate == null || day.after(minDate) || day == minDate)
                                 && (maxDate == null || day.before(maxDate) || day == maxDate)
-                                && (if (startDate.value != null && endDate.value == null) day.after(startDate.value) else true)
+                        //&& (if (startDate.value != null && endDate.value == null) day.after(startDate.value) else true)
 
                         val selectedBackgroundColor = animateColorAsState(targetValue = if (isSelected) colors.selectedIndicatorColor else Color.Transparent)
-                        val textColor = animateColorAsState(targetValue = if (isSelected) {
-                            colors.selectedDayNumberColor
-                        } else if(!isEnabled) {
-                            colors.disableDayColor
-                        } else {
-                            colors.dayNumberColor
-                        })
+                        val textColor = animateColorAsState(
+                            targetValue = if (isSelected) {
+                                colors.selectedDayNumberColor
+                            } else if (!isEnabled) {
+                                colors.disableDayColor
+                            } else {
+                                colors.dayNumberColor
+                            }
+                        )
 
                         Box(
                             Modifier
@@ -177,13 +179,16 @@ fun MultiDatePicker(
                                 )
                                 .clip(CircleShape)
                                 .clickable(enabled = isEnabled) {
-                                    if (startDate.value == null) {
-                                        startDate.value = day
-                                    } else if (endDate.value == null) {
-                                        endDate.value = day
-                                    } else {
-                                        startDate.value = day
-                                        endDate.value = null
+                                    if (day != null) {
+                                        if (startDate.value == null) {
+                                            startDate.value = day
+                                        } else if (endDate.value == null) {
+                                            if (day.before(startDate.value)) startDate.value = day
+                                            else endDate.value = day
+                                        } else {
+                                            startDate.value = day
+                                            endDate.value = null
+                                        }
                                     }
                                 }
                         ) {
