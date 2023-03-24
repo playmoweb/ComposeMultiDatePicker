@@ -174,7 +174,8 @@ fun MultiDatePicker(
                                             startDate.value = day
                                         } else if (endDate.value == null) {
                                             if (day.before(startDate.value)) startDate.value = day
-                                            else endDate.value = day
+                                            else if (day.after(startDate.value)) endDate.value = day
+                                            // else => day == startDate.value => do nothing
                                         } else {
                                             startDate.value = day
                                             endDate.value = null
