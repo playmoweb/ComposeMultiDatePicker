@@ -94,6 +94,7 @@ fun MultiDatePicker(
                         )
                     }.time
                 }
+                .padding(xxsmallPadding)
         )
     }
 
@@ -113,9 +114,10 @@ fun MultiDatePicker(
             Text(
                 text = currDate.value.toMonthYear(),
                 style = MaterialTheme.typography.bodyMedium.copy(color = colors.monthColor),
-                modifier = Modifier.clickable {
-                    isSelectYear.value = true
-                }
+                modifier = Modifier
+                    .clip(RoundedCornerShape(smallRadius))
+                    .clickable { isSelectYear.value = true }
+                    .padding(xxsmallPadding)
             )
 
             Row {
@@ -145,25 +147,28 @@ fun MultiDatePicker(
                         .height(pickerHeight.value)
                         .fillMaxWidth(),
                     state = yearScrollState,
-                    verticalArrangement = Arrangement.spacedBy(xsmallPadding),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     items(allYears) { year ->
                         val isSelected = year == calendar.value.get(Calendar.YEAR)
 
-                        Text(
-                            year.toString(),
-                            style = if (isSelected) MaterialTheme.typography.headlineMedium.copy(color = colors.monthColor, fontWeight = FontWeight.Black)
-                            else MaterialTheme.typography.titleLarge.copy(color = colors.weekDayColor),
+                        Box(
                             modifier = Modifier
-                                .height(pickerHeight.value / 7 - (if (isSelected) 0.dp else xsmallPadding))
+                                .height(pickerHeight.value / 7)
+                                .clip(RoundedCornerShape(smallRadius))
                                 .clickable {
-                                    currDate.value = calendar.value.apply {
-                                        set(Calendar.YEAR, year)
-                                    }.time
+                                    currDate.value = calendar.value.apply { set(Calendar.YEAR, year) }.time
                                     isSelectYear.value = false
-                                }
-                        )
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                year.toString(),
+                                style = if (isSelected) MaterialTheme.typography.headlineMedium.copy(color = colors.monthColor, fontWeight = FontWeight.Bold)
+                                else MaterialTheme.typography.titleLarge.copy(color = colors.weekDayColor, fontWeight = FontWeight.Light),
+                                modifier = Modifier.padding(horizontal = xsmallPadding)
+                            )
+                        }
                     }
                 }
             } else {
