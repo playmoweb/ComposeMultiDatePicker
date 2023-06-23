@@ -26,6 +26,13 @@ dependencies {
 
 ![Basis](./doc/multiDatePicker.png)
 
+# Features
+
+- [x] Single date picker
+- [x] Range date picker (start date to end date)
+- [x] Customizable colors
+- [x] Quickly select year by clicking on the month/year title
+
 # Usage
 
 1. By selecting a day on the first click, it will set the startDate value.

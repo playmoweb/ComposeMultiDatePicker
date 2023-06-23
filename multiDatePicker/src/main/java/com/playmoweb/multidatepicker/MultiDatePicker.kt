@@ -59,9 +59,7 @@ fun MultiDatePicker(
     val calendar = remember { mutableStateOf(Calendar.getInstance()) }
     val currDate = remember { mutableStateOf(calendar.value.time) }
     val isSelectYear = remember { mutableStateOf(false) }
-    val yearScrollState = rememberLazyListState(
-        initialFirstVisibleItemIndex = allYears.indexOf(calendar.value.get(Calendar.YEAR)) - 3,
-    )
+    val yearScrollState = rememberLazyListState()
     val pickerHeight = remember { mutableStateOf(0.dp) }
 
     LaunchedEffect(isSelectYear.value) {

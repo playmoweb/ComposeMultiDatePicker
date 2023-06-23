@@ -63,44 +63,51 @@ class MainActivity : ComponentActivity() {
                             .padding(paddings)
                             .padding(horizontal = 10.dp)
                             .fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
+                        Column(
+                            Modifier
+                                .weight(1f),
+                            verticalArrangement = Arrangement.Bottom,
                         ) {
-                            Text(
-                                text = "startDate : ",
-                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            )
-                            Spacer(Modifier.width(10.dp))
-                            Text(
-                                text = startDate.value?.asString("dd/MM/YYYY") ?: "null",
-                                style = MaterialTheme.typography.bodyMedium,
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = "startDate : ",
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                )
+                                Spacer(Modifier.width(10.dp))
+                                Text(
+                                    text = startDate.value?.asString("dd/MM/YYYY") ?: "null",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                            Spacer(Modifier.height(5.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = "endDate : ",
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                )
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    text = endDate.value?.asString("dd/MM/YYYY") ?: "null",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                            Spacer(Modifier.height(20.dp))
+                        }
+                        Column( modifier = Modifier.weight(2f)) {
+                            MultiDatePicker(
+                                minDate = min.time,
+                                maxDate = max.time,
+                                startDate = startDate,
+                                endDate = endDate,
                             )
                         }
-                        Spacer(Modifier.height(5.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = "endDate : ",
-                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            )
-                            Spacer(Modifier.width(5.dp))
-                            Text(
-                                text = endDate.value?.asString("dd/MM/YYYY") ?: "null",
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
-                        Spacer(Modifier.height(20.dp))
-                        MultiDatePicker(
-                            minDate = min.time,
-                            maxDate = max.time,
-                            startDate = startDate,
-                            endDate = endDate,
-                        )
                     }
                 }
             }
