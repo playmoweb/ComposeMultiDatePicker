@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.playmoweb.multidatepicker.MultiDatePicker
+import com.playmoweb.multidatepicker.models.MultiDatePickerColors
 import com.playmoweb.multidatepicker.utils.extensions.ISO8601
 import java.text.SimpleDateFormat
 import java.util.Calendar
