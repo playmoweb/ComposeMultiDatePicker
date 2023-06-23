@@ -2,6 +2,26 @@
 
 A customizable date picker which support single date picker and range date picker.
 
+# How to install
+
+Add the following to your project level `build.gradle`:
+
+```groovy
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
+```
+
+Add the dependancy to your module `build.gradle`:
+
+```groovy
+dependencies {
+    implementation 'com.github.playmoweb:MultiDatePicker:1.0.1'
+}
+```
+
 # Example
 
 ![Basis](./doc/multiDatePicker.png)
