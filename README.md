@@ -32,6 +32,7 @@ dependencies {
 - [x] Range date picker (start date to end date)
 - [x] Customizable colors
 - [x] Quickly select year by clicking on the month/year title
+- [x] Quickly change month by sliding on the days
 
 # Usage
 
