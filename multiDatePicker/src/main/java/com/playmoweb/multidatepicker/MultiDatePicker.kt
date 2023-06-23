@@ -8,26 +8,41 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -35,10 +50,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.playmoweb.multidatepicker.models.MultiDatePickerColors
-import com.playmoweb.multidatepicker.utils.*
+import com.playmoweb.multidatepicker.utils.Operation
 import com.playmoweb.multidatepicker.utils.extensions.toMonthYear
 import com.playmoweb.multidatepicker.utils.extensions.toShortDay
-import java.util.*
+import com.playmoweb.multidatepicker.utils.innerPadding
+import com.playmoweb.multidatepicker.utils.mediumRadius
+import com.playmoweb.multidatepicker.utils.smallRadius
+import com.playmoweb.multidatepicker.utils.xsmallPadding
+import com.playmoweb.multidatepicker.utils.xxsmallPadding
+import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -61,11 +82,25 @@ fun MultiDatePicker(
     val isSelectYear = remember { mutableStateOf(false) }
     val yearScrollState = rememberLazyListState()
     val pickerHeight = remember { mutableStateOf(0.dp) }
+    var offsetX by remember { mutableStateOf(0f) }
+    var isSliding by remember { mutableStateOf(false) }
 
     LaunchedEffect(isSelectYear.value) {
         if (isSelectYear.value) {
             val yearIndex = allYears.indexOf(calendar.value.get(Calendar.YEAR)) - 3
             yearScrollState.scrollToItem(yearIndex)
+        }
+    }
+
+    LaunchedEffect(isSliding) {
+        if(!isSliding) {
+            if(offsetX > 1) {
+                // Remove a month
+                currDate.value = calendar.value.apply { add(Calendar.MONTH, -1) }.time
+            } else if(offsetX < -1) {
+                // Add a month
+                currDate.value = calendar.value.apply { add(Calendar.MONTH, 1) }.time
+            }
         }
     }
 
@@ -136,7 +171,7 @@ fun MultiDatePicker(
                 } else {
                     fadeIn() with fadeOut()
                 }
-            }
+            }, label = ""
         ) { showYearSelector ->
             if (showYearSelector) {
                 /**
@@ -194,6 +229,15 @@ fun MultiDatePicker(
                      * BODY
                      */
                     Column(
+                        modifier = Modifier.pointerInput(Unit) {
+                            detectDragGestures(
+                                onDragStart = { isSliding = true },
+                                onDragEnd = { isSliding = false },
+                            ) { change, dragAmount ->
+                                change.consume()
+                                offsetX = dragAmount.x
+                            }
+                        },
                         verticalArrangement = Arrangement.spacedBy(xxsmallPadding),
                     ) {
                         val daysNumber: IntRange = (1..calendar.value.getActualMaximum(Calendar.DAY_OF_MONTH))
